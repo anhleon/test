@@ -1,1 +1,155 @@
 
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Custom Email Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f9f9f9;
+    }
+
+    .section {
+      margin-top: 30px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 200px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      resize: vertical;
+      margin-bottom: 10px;
+    }
+
+    .notification {
+      background-color: #28a745;
+      color: white;
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 10px;
+      text-align: center;
+      display: none;
+    }
+
+    .btn {
+      padding: 15px;
+      width: 100%;
+      font-size: 18px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #0056b3;
+    }
+
+    input, select {
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .output-area {
+      font-size: 16px;
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-top: 10px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>📧 Tạo Email Ngẫu Nhiên Tuỳ Chỉnh</h2>
+
+  <!-- Tuỳ chọn domain -->
+  <input type="text" id="customDomain" placeholder="Nhập đuôi email (vd: gmail.com, outlook.com)" />
+
+  <!-- Tuỳ chọn số lượng -->
+  <input type="number" id="randomCount" placeholder="Số lượng email muốn tạo" min="1" />
+
+  <!-- Tuỳ chọn số chữ số hậu tố -->
+  <select id="suffixLength">
+    <option value="2">Hậu tố 2 số</option>
+    <option value="3">Hậu tố 3 số</option>
+    <option value="4">Hậu tố 4 số</option>
+    <option value="5">Hậu tố 5 số</option>
+  </select>
+
+  <!-- Nút tạo email -->
+  <button class="btn" onclick="generateAndCopyCustomEmails()">📋 Tạo & Copy Email Ngẫu Nhiên</button>
+
+  <!-- Kết quả -->
+  <div class="output-area" id="generatedEmails">Kết quả email sẽ hiển thị tại đây</div>
+
+  <!-- Thông báo copy -->
+  <div class="notification" id="notification">Đã sao chép vào clipboard</div>
+
+  <script>
+    function generateAndCopyCustomEmails() {
+      const domain = document.getElementById('customDomain').value.trim();
+      const count = parseInt(document.getElementById('randomCount').value);
+      const suffixLength = parseInt(document.getElementById('suffixLength').value);
+      const output = document.getElementById('generatedEmails');
+      const notif = document.getElementById('notification');
+
+      if (!domain || isNaN(count) || count <= 0) {
+        alert("Vui lòng nhập đuôi email hợp lệ và số lượng > 0.");
+        return;
+      }
+
+      const chars = 'abcdefghijklmnopqrstuvwxyz';
+      const separators = ['-', '_'];
+      const emails = [];
+
+      for (let i = 0; i < count; i++) {
+        const part1 = randomString(chars, 5 + Math.floor(Math.random() * 3));
+        const part2 = randomString(chars, 3 + Math.floor(Math.random() * 3));
+        const separator = separators[Math.floor(Math.random() * separators.length)];
+        const number = generateRandomNumber(suffixLength);
+        const email = `${part1}${separator}${part2}${number}@${domain}`;
+        emails.push(email);
+      }
+
+      const result = emails.join('\n');
+      output.textContent = result;
+
+      navigator.clipboard.writeText(result).then(() => {
+        notif.style.display = 'block';
+        notif.textContent = `✅ Đã sao chép ${count} email`;
+        setTimeout(() => notif.style.display = 'none', 2000);
+      });
+    }
+
+    function randomString(charSet, length) {
+      let result = '';
+      for (let i = 0; i < length; i++) {
+        result += charSet.charAt(Math.floor(Math.random() * charSet.length));
+      }
+      return result;
+    }
+
+    function generateRandomNumber(length) {
+      const min = Math.pow(10, length - 1);
+      const max = Math.pow(10, length) - 1;
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+  </script>
+
+</body>
+</html>
