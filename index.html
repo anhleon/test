@@ -13,27 +13,19 @@
 
     .copy-btn {
       width: 100%;
-      padding: 15px;
-      font-size: 20px;
+      height: 150px; /* Tăng chiều cao gấp 3 lần */
+      font-size: 24px;
       background-color: #007bff;
       color: white;
       border: none;
       border-radius: 8px;
-      margin-bottom: 10px;
+      margin-bottom: 20px;
       cursor: pointer;
       transition: background-color 0.3s ease;
     }
 
     .copy-btn:hover {
       background-color: #0056b3;
-    }
-
-    .copied-email {
-      font-size: 18px;
-      color: #333;
-      text-align: center;
-      margin-bottom: 20px;
-      font-weight: bold;
     }
 
     textarea {
@@ -44,35 +36,45 @@
       border: 1px solid #ccc;
       border-radius: 6px;
       resize: vertical;
+      margin-bottom: 20px;
     }
 
     .notification {
-      position: fixed;
-      top: 20px;
-      right: 20px;
+      position: relative;
       background-color: #28a745;
       color: white;
       padding: 10px 20px;
       border-radius: 4px;
+      margin: 0 auto 10px;
+      text-align: center;
+      font-size: 16px;
+      width: fit-content;
       opacity: 0;
       transition: opacity 0.3s ease;
-      z-index: 1000;
-      font-size: 14px;
     }
 
     .notification.show {
       opacity: 1;
+    }
+
+    .copied-email {
+      font-size: 18px;
+      color: #333;
+      text-align: center;
+      font-weight: bold;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
 
   <button class="copy-btn" onclick="copyNextEmail()">📋 Copy Mail</button>
-  <div class="copied-email" id="copiedEmail">Chưa có email được sao chép</div>
-  
+
   <textarea id="emailList" placeholder="example1@gmail.com&#10;example2@gmail.com"></textarea>
 
   <div id="notification" class="notification">Đã copy email</div>
+
+  <div class="copied-email" id="copiedEmail">Chưa có email được sao chép</div>
 
   <script>
     function copyNextEmail() {
@@ -88,10 +90,10 @@
 
       navigator.clipboard.writeText(firstEmail).then(() => {
         textarea.value = emails.join('\n');
-        document.getElementById('copiedEmail').textContent = firstEmail;
-        showNotification("Đã copy email");
-      }).catch(err => {
-        showNotification("Không thể copy.");
+        document.getElementById('copiedEmail').textContent = `✅ Đã copy: ${firstEmail}`;
+        showNotification("📋 Email đã được sao chép");
+      }).catch(() => {
+        showNotification("❌ Không thể copy.");
       });
     }
 
