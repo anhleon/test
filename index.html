@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Copy Email</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+    textarea {
+      width: 100%;
+      height: 200px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Nhập danh sách email (mỗi dòng một email):</h2>
+  <textarea id="emailList" placeholder="example1@gmail.com&#10;example2@gmail.com"></textarea>
+  <br>
+  <button onclick="copyNextEmail()">Copy Mail</button>
+
+  <script>
+    function copyNextEmail() {
+      const textarea = document.getElementById('emailList');
+      const emails = textarea.value.trim().split('\n').filter(email => email.trim() !== '');
+
+      if (emails.length === 0) {
+        alert("Danh sách email trống!");
+        return;
+      }
+
+      const firstEmail = emails.shift(); // Lấy email đầu tiên và loại bỏ khỏi mảng
+
+      // Copy vào clipboard
+      navigator.clipboard.writeText(firstEmail).then(() => {
+        // Cập nhật lại textarea sau khi đã xoá email đầu
+        textarea.value = emails.join('\n');
+        alert(`Đã copy: ${firstEmail}`);
+      }).catch(err => {
+        alert("Không thể copy vào clipboard: " + err);
+      });
+    }
+  </script>
+
+</body>
+</html>
