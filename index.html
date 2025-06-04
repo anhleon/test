@@ -1,31 +1,16 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Copy Email</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tạo và Copy Email</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 20px;
-      background-color: #f9f9f9;
-    }
-
-    .copy-btn {
-      width: 100%;
-      height: 150px; /* Tăng chiều cao gấp 3 lần */
-      font-size: 24px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    .copy-btn:hover {
-      background-color: #0056b3;
+      background-color: #f2f2f2;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
     }
 
     textarea {
@@ -39,16 +24,62 @@
       margin-bottom: 20px;
     }
 
+    .btn-main {
+      width: 100%;
+      height: 150px;
+      font-size: 28px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      margin-bottom: 25px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-main:hover {
+      background-color: #0056b3;
+    }
+
+    .options {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .options label {
+      display: block;
+      margin: 8px 0 4px;
+      font-weight: bold;
+    }
+
+    .options input[type="text"],
+    .options input[type="number"] {
+      width: 100%;
+      padding: 6px;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .options input[type="checkbox"] {
+      margin-right: 6px;
+    }
+
+    .options button {
+      padding: 8px 16px;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
     .notification {
-      position: relative;
       background-color: #28a745;
       color: white;
-      padding: 10px 20px;
-      border-radius: 4px;
-      margin: 0 auto 10px;
       text-align: center;
-      font-size: 16px;
-      width: fit-content;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 10px;
       opacity: 0;
       transition: opacity 0.3s ease;
     }
@@ -58,55 +89,123 @@
     }
 
     .copied-email {
-      font-size: 18px;
-      color: #333;
       text-align: center;
       font-weight: bold;
-      margin-top: 10px;
+      margin-bottom: 20px;
+      color: #333;
     }
   </style>
 </head>
 <body>
 
-  <button class="copy-btn" onclick="copyNextEmail()">📋 Copy Mail</button>
+  <button class="btn-main" onclick="copyNextEmail()">📋 Copy email tiếp theo</button>
 
-  <textarea id="emailList" placeholder="example1@gmail.com&#10;example2@gmail.com"></textarea>
+  <textarea id="emailList" placeholder="Danh sách email sẽ hiển thị ở đây..."></textarea>
 
-  <div id="notification" class="notification">Đã copy email</div>
-
+  <div class="notification" id="notification">Đã copy email</div>
   <div class="copied-email" id="copiedEmail">Chưa có email được sao chép</div>
 
+  <div class="options">
+    <label>Ký tự phân tách (mặc định: _):</label>
+    <input type="text" id="separator" maxlength="1" placeholder="_" />
+
+    <label>Domain (mặc định: @mail.com):</label>
+    <input type="text" id="domain" placeholder="@mail.com" />
+
+    <label>Số lượng ký tự hậu tố (2 đến 6):</label>
+    <input type="number" id="suffixLength" value="4" min="2" max="6" />
+
+    <label>Số lượng email muốn tạo:</label>
+    <input type="number" id="emailCount" value="5" min="1" max="100" />
+
+    <label>
+      <input type="checkbox" id="includeNumbers" />
+      Gồm số trong hậu tố
+    </label>
+
+    <button onclick="generateEmails()">🚀 Tạo danh sách email</button>
+  </div>
+
   <script>
+    const popularNames = [
+      "leon", "luna", "emma", "jack", "oliver", "ava", "noah", "mia", "lucas", "zoe",
+      "elena", "mason", "nina", "chloe", "liam", "alex", "lily", "ryan", "sara", "hugo"
+    ];
+
+    function getRandomName() {
+      return popularNames[Math.floor(Math.random() * popularNames.length)];
+    }
+
+    function generateRandomSuffix(length = 4, includeNumbers = false) {
+      const letters = "abcdefghijklmnopqrstuvwxyz";
+      const numbers = "0123456789";
+      const chars = letters + (includeNumbers ? numbers : "");
+      let suffix = "";
+      for (let i = 0; i < length; i++) {
+        suffix += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return suffix;
+    }
+
+    function generateEmails() {
+      const separator = document.getElementById("separator").value.trim() || "_";
+      const domainInput = document.getElementById("domain").value.trim();
+      const includeNumbers = document.getElementById("includeNumbers").checked;
+      const count = parseInt(document.getElementById("emailCount").value) || 1;
+      const suffixLength = parseInt(document.getElementById("suffixLength").value) || 4;
+      const domain = domainInput.startsWith("@")
+        ? domainInput
+        : "@" + (domainInput || "mail.com");
+
+      const emails = [];
+
+      for (let i = 0; i < count; i++) {
+        const name = getRandomName();
+        const suffix = generateRandomSuffix(suffixLength, includeNumbers);
+        const email = `${name}${separator}${suffix}${domain}`;
+        emails.push(email);
+      }
+
+      const textarea = document.getElementById("emailList");
+      textarea.value = emails.join("\n"); // 👉 Ghi đè lên email cũ
+
+      showNotification(`✅ Đã tạo ${count} email mới`);
+      document.getElementById("copiedEmail").textContent = `📄 Đã tạo ${count} email`;
+    }
+
     function copyNextEmail() {
-      const textarea = document.getElementById('emailList');
-      const emails = textarea.value.trim().split('\n').filter(email => email.trim() !== '');
+      const textarea = document.getElementById("emailList");
+      const emails = textarea.value
+        .trim()
+        .split("\n")
+        .filter((email) => email.trim() !== "");
 
       if (emails.length === 0) {
-        showNotification("Danh sách email trống.");
+        showNotification("📭 Danh sách email trống.");
+        textarea.focus();
         return;
       }
 
       const firstEmail = emails.shift();
 
-      navigator.clipboard.writeText(firstEmail).then(() => {
-        textarea.value = emails.join('\n');
-        document.getElementById('copiedEmail').textContent = `✅ Đã copy: ${firstEmail}`;
-        showNotification("📋 Email đã được sao chép");
-      }).catch(() => {
-        showNotification("❌ Không thể copy.");
-      });
+      navigator.clipboard
+        .writeText(firstEmail)
+        .then(() => {
+          textarea.value = emails.join("\n");
+          document.getElementById("copiedEmail").textContent = `✅ Đã copy: ${firstEmail}`;
+          showNotification("📋 Email đã được sao chép");
+        })
+        .catch(() => {
+          showNotification("❌ Không thể copy.");
+        });
     }
 
     function showNotification(message) {
-      const notif = document.getElementById('notification');
+      const notif = document.getElementById("notification");
       notif.textContent = message;
-      notif.classList.add('show');
-
-      setTimeout(() => {
-        notif.classList.remove('show');
-      }, 2000);
+      notif.classList.add("show");
+      setTimeout(() => notif.classList.remove("show"), 2000);
     }
   </script>
-
 </body>
 </html>
