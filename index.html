@@ -12,7 +12,6 @@
       max-width: 600px;
       margin: auto;
     }
-
     textarea {
       width: 100%;
       height: 200px;
@@ -23,7 +22,6 @@
       resize: vertical;
       margin-bottom: 20px;
     }
-
     .btn-main {
       width: 100%;
       height: 150px;
@@ -36,11 +34,9 @@
       cursor: pointer;
       transition: background-color 0.3s ease;
     }
-
     .btn-main:hover {
       background-color: #0056b3;
     }
-
     .options {
       background: white;
       padding: 15px;
@@ -48,31 +44,27 @@
       margin-bottom: 20px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
     }
-
     .options label {
       display: block;
       margin: 8px 0 4px;
       font-weight: bold;
     }
-
     .options input[type="text"],
-    .options input[type="number"] {
+    .options input[type="number"],
+    .options select {
       width: 100%;
       padding: 6px;
       font-size: 14px;
       margin-bottom: 10px;
     }
-
     .options input[type="checkbox"] {
       margin-right: 6px;
     }
-
     .options button {
       padding: 8px 16px;
       margin-top: 10px;
       font-size: 14px;
     }
-
     .notification {
       background-color: #28a745;
       color: white;
@@ -83,11 +75,9 @@
       opacity: 0;
       transition: opacity 0.3s ease;
     }
-
     .notification.show {
       opacity: 1;
     }
-
     .copied-email {
       text-align: center;
       font-weight: bold;
@@ -106,17 +96,32 @@
   <div class="copied-email" id="copiedEmail">Chưa có email được sao chép</div>
 
   <div class="options">
-    <label>Ký tự phân tách (mặc định: _):</label>
-    <input type="text" id="separator" maxlength="1" placeholder="_" />
+    <label>Ký tự phân tách (mặc định: +):</label>
+    <input type="text" id="separator" maxlength="1" placeholder="+" />
 
-    <label>Domain (mặc định: @mail.com):</label>
-    <input type="text" id="domain" placeholder="@mail.com" />
+    <label>Chọn domain:</label>
+    <select id="domainSelect" onchange="toggleCustomDomain()">
+      <option value="outlook.com" selected>outlook.com</option>
+      <option value="gmail.com">gmail.com</option>
+      <option value="yahoo.com">yahoo.com</option>
+      <option value="hotmail.com">hotmail.com</option>
+      <option value="aol.com">aol.com</option>
+      <option value="yandex.com">yandex.com</option>
+      <option value="icloud.com">icloud.com</option>
+      <option value="live.com">live.com</option>
+      <option value="custom">Tùy chỉnh tên miền</option>
+    </select>
+
+    <div id="customDomainWrapper" style="display:none;">
+      <label>Tên miền tùy chỉnh:</label>
+      <input type="text" id="domain" placeholder="@yourdomain.com" />
+    </div>
 
     <label>Số lượng ký tự hậu tố (2 đến 6):</label>
-    <input type="number" id="suffixLength" value="4" min="2" max="6" />
+    <input type="number" id="suffixLength" value="6" min="2" max="6" />
 
     <label>Số lượng email muốn tạo:</label>
-    <input type="number" id="emailCount" value="5" min="1" max="100" />
+    <input type="number" id="emailCount" value="50" min="1" max="100" />
 
     <label>
       <input type="checkbox" id="includeNumbers" />
@@ -147,7 +152,7 @@
       'gabriel','arthur','louis','raphael','emma','lea','chloe','manon','jade','alice','rose','anna','lina',
       'mila','lina','lea','louis','noah','emil','jonas','leon','ben','paul','finn','luca','max','felix',
       'anna','mia','emma','hannah','sofia','lina','lisa','marie','leonie','lara'
-    ];
+      ];
 
     function getRandomName() {
       return popularNames[Math.floor(Math.random() * popularNames.length)];
@@ -164,15 +169,30 @@
       return suffix;
     }
 
+    function toggleCustomDomain() {
+      const domainSelect = document.getElementById("domainSelect");
+      const customWrapper = document.getElementById("customDomainWrapper");
+      if (domainSelect.value === "custom") {
+        customWrapper.style.display = "block";
+      } else {
+        customWrapper.style.display = "none";
+      }
+    }
+
     function generateEmails() {
-      const separator = document.getElementById("separator").value.trim() || "_";
-      const domainInput = document.getElementById("domain").value.trim();
+      const separator = document.getElementById("separator").value.trim() || "+";
       const includeNumbers = document.getElementById("includeNumbers").checked;
       const count = parseInt(document.getElementById("emailCount").value) || 1;
-      const suffixLength = parseInt(document.getElementById("suffixLength").value) || 4;
-      const domain = domainInput.startsWith("@")
-        ? domainInput
-        : "@" + (domainInput || "mail.com");
+      const suffixLength = parseInt(document.getElementById("suffixLength").value) || 6;
+
+      let domain = "";
+      const domainSelect = document.getElementById("domainSelect").value;
+      if (domainSelect === "custom") {
+        const custom = document.getElementById("domain").value.trim();
+        domain = custom.startsWith("@") ? custom : "@" + custom;
+      } else {
+        domain = "@" + domainSelect;
+      }
 
       const emails = [];
 
@@ -184,7 +204,7 @@
       }
 
       const textarea = document.getElementById("emailList");
-      textarea.value = emails.join("\n"); // 👉 Ghi đè lên email cũ
+      textarea.value = emails.join("\n");
 
       showNotification(`✅ Đã tạo ${count} email mới`);
       document.getElementById("copiedEmail").textContent = `📄 Đã tạo ${count} email`;
