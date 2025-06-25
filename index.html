@@ -128,6 +128,16 @@
       Gồm số trong hậu tố
     </label>
 
+    <label>
+      <input type="checkbox" id="capitalizeName" />
+      Viết hoa tên
+    </label>
+
+    <label>
+      <input type="checkbox" id="capitalizeSuffix" />
+      Viết hoa hậu tố
+    </label>
+
     <button onclick="generateEmails()">🚀 Tạo danh sách email</button>
   </div>
 
@@ -152,7 +162,7 @@
       'gabriel','arthur','louis','raphael','emma','lea','chloe','manon','jade','alice','rose','anna','lina',
       'mila','lina','lea','louis','noah','emil','jonas','leon','ben','paul','finn','luca','max','felix',
       'anna','mia','emma','hannah','sofia','lina','lisa','marie','leonie','lara'
-      ];
+    ];
 
     function getRandomName() {
       return popularNames[Math.floor(Math.random() * popularNames.length)];
@@ -182,6 +192,8 @@
     function generateEmails() {
       const separator = document.getElementById("separator").value.trim() || "+";
       const includeNumbers = document.getElementById("includeNumbers").checked;
+      const capitalizeName = document.getElementById("capitalizeName").checked;
+      const capitalizeSuffix = document.getElementById("capitalizeSuffix").checked;
       const count = parseInt(document.getElementById("emailCount").value) || 1;
       const suffixLength = parseInt(document.getElementById("suffixLength").value) || 6;
 
@@ -197,8 +209,12 @@
       const emails = [];
 
       for (let i = 0; i < count; i++) {
-        const name = getRandomName();
-        const suffix = generateRandomSuffix(suffixLength, includeNumbers);
+        let name = getRandomName();
+        let suffix = generateRandomSuffix(suffixLength, includeNumbers);
+
+        if (capitalizeName) name = name.toUpperCase();
+        if (capitalizeSuffix) suffix = suffix.toUpperCase();
+
         const email = `${name}${separator}${suffix}${domain}`;
         emails.push(email);
       }
